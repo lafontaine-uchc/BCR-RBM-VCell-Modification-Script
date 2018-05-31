@@ -41,9 +41,15 @@ def get_observables(xmldoc, obs_list):
     itemlist = xmldoc.getElementsByTagName('Function')
     for i in itemlist:
         name=i._attrsNS.get((None, 'Name')).firstChild._data
-        if name  in obs_list:
+        if name in obs_list:
             observables[name] = i.firstChild.data
     return(observables)
+
+
+def get_node_by_attribute(parent_node,att_name,att_value):
+    for x in parent_node.childNodes:
+        if x.attributes.getNamedItem(att_name).firstChild.data == att_value:
+            return x
 
 
 def add_output_function_to_simulation(function_name, function_content, vcml_doc):
@@ -57,6 +63,8 @@ def add_output_function_to_simulation(function_name, function_content, vcml_doc)
     OutputFunctions = vcml_doc.getElementsByTagName('OutputFunctions')
     OutputFunctions[0].appendChild(new_element)
     return(vcml_doc)
+#def convert_mass_action_to_michaelis_menton(x):
+
 
 
 
@@ -75,5 +83,78 @@ for key, value in ob.items():
     print (key, value)
     flattened_doc = add_output_function_to_simulation(key, value, flattened_doc)
 
-with open("test_output_flatadsaf.vcml", "w") as xml_file:
+xml_doc=flattened_doc
+xml_doc.getElementsByTagName("SimpleReaction")
+
+t=flattened_doc.getElementsByTagName("SimpleReaction")
+
+
+for x in t:
+    if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menton(x)
+        print(x.attributes.getNamedItem("Name").firstChild.data)
+        kinetics=x.getElementsByTagName("Kinetics")[0]
+        A=get_node_by_attribute(kinetics,"Role","reaction rate")
+        print(A.firstChild.data)
+        rxn=A.firstChild.data
+        reactants = x.getElementsByTagName('Reactant')
+        reactant_names = []
+        for reactant in reactants:
+            print(reactant.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+            reactant_names.append(reactant.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+
+        products = x.getElementsByTagName('Product')
+        product_names = []
+        for product in products:
+            print(product.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+            product_names.append(product.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+        catalyst = list(set(reactant_names) & set(product_names))[0]
+        print(reactant_names)
+        reactant_names.remove(catalyst)
+        print(reactant_names)
+        substrate = reactant_names[0]
+
+        product_names.remove(catalyst)
+        product_name = product_names[0]
+        print("substrate: ", substrate, "product_name: ", product_name, "catalyst: ", catalyst)
+        new_rxn = "((Kf * " + catalyst + " * " + substrate + ") / (Kr + " + substrate + "))"
+        A.firstChild.data = new_rxn
+        print(get_node_by_attribute(x.getElementsByTagName("Kinetics")[0],"Role","reaction rate").firstChild.data)
+        # kinetics.attributes.getNamedItem("KineticsType").firstChild.data = 'GeneralKinetics'
+        kinetics.setAttribute("KineticsType", 'GeneralKinetics')
+        get_node_by_attribute(kinetics, "Role", "forward rate constant").setAttribute("Role", 'user defined')
+        get_node_by_attribute(kinetics, "Role", "reverse rate constant").setAttribute("Role", 'user defined')
+
+t=flattened_doc.getElementsByTagName("SimpleReaction")
+
+for x in t:
+    if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
+        print(x.attributes.getNamedItem("Name").firstChild.data)
+        kinetics=x.getElementsByTagName("Kinetics")[0]
+        A=get_node_by_attribute(kinetics,"Role","reaction rate")
+        print(A.firstChild.data)
+        rxn=A.firstChild.data
+        reactants = x.getElementsByTagName('Reactant')
+        reactant_names = []
+        for reactant in reactants:
+            print(reactant.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+            reactant_names.append(reactant.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+
+        products = x.getElementsByTagName('Product')
+        product_names = []
+        for product in products:
+            print(product.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+            product_names.append(product.attributes.getNamedItem("LocalizedCompoundRef").firstChild.data)
+        catalyst = list(set(reactant_names) & set(product_names))[0]
+        print(reactant_names)
+        reactant_names.remove(catalyst)
+        print(reactant_names)
+        substrate = reactant_names[0]
+
+        product_names.remove(catalyst)
+        product_name = product_names[0]
+        print("substrate: ", substrate, "product_name: ", product_name, "catalyst: ", catalyst)
+        print(kinetics.attributes.getNamedItem("KineticsType").firstChild.data)
+
+with open("test_output_flatadsaf_new.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
