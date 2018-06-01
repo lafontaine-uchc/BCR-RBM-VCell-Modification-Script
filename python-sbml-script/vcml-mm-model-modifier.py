@@ -68,6 +68,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
     print(simple_reaction_node.attributes.getNamedItem("Name").firstChild.data)
     kinetics = simple_reaction_node.getElementsByTagName("Kinetics")[0]
     A = get_node_by_attribute(kinetics, "Role", "reaction rate")
+    Ks = get_node_by_attribute(kinetics, 'Role', 'forward rate constant')
+    k, K = Ks.childNodes[0].data.replace("(", "").replace(")", "").split(" + ")
     print(A.firstChild.data)
     rxn = A.firstChild.data
     reactants = simple_reaction_node.getElementsByTagName('Reactant')
@@ -90,10 +92,12 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
     product_names.remove(catalyst)
     product_name = product_names[0]
     print("substrate: ", substrate, "product_name: ", product_name, "catalyst: ", catalyst)
-    new_rxn = "((Kf * " + catalyst + " * " + substrate + ") / (Kr + " + substrate + "))"
+    new_rxn = "((" + k + " * " + catalyst + " * " + substrate + ") / (" + K + " + " + substrate + "))"
     A.firstChild.data = new_rxn
     print(get_node_by_attribute(simple_reaction_node.getElementsByTagName("Kinetics")[0], "Role", "reaction rate").firstChild.data)
     # kinetics.attributes.getNamedItem("KineticsType").firstChild.data = 'GeneralKinetics'
+
+    #removed to test new piece
     kinetics.setAttribute("KineticsType", 'GeneralKinetics')
     get_node_by_attribute(kinetics, "Role", "forward rate constant").setAttribute("Role", 'user defined')
     get_node_by_attribute(kinetics, "Role", "reverse rate constant").setAttribute("Role", 'user defined')
@@ -125,15 +129,17 @@ t=flattened_doc.getElementsByTagName("SimpleReaction")
 for x in t:
     if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
         convert_mass_action_to_michaelis_menten(x)
-    if "BLNK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+    # if "BLNK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
+    #     convert_mass_action_to_michaelis_menten(x)
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
 for x in t:
     if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
         print(x.attributes.getNamedItem("Name").firstChild.data)
         kinetics=x.getElementsByTagName("Kinetics")[0]
-        A=get_node_by_attribute(kinetics,"Role","reaction rate")
+        A=get_node_by_attribute(kinetics, "Role", "reaction rate")
+        # Ks=get_node_by_attribute(kinetics, 'Role', 'forward rate constant')
+        # k, K = Ks.childNodes[0].data.replace("(", "").replace(")", "").split(" + ")
         print(A.firstChild.data)
         rxn=A.firstChild.data
         reactants = x.getElementsByTagName('Reactant')
