@@ -112,8 +112,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
 
 
 
-flattened_doc = minidom.parse('small_model_6-4-18_flattned.vcml')
-original_doc = minidom.parse('small_model_6-4-18_rbm.vcml')
+flattened_doc = minidom.parse('small_model_6-5-18_flattned.vcml')
+original_doc = minidom.parse('small_model_6-5-18_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
@@ -127,8 +127,8 @@ for key, value in ob.items():
     print (key, value)
     flattened_doc = add_output_function_to_simulation(key, value, flattened_doc)
 
-flattened_doc = add_output_function_to_simulation("pLyn_norm", "(pLYN / (1.18 * 9.2961E-4))", flattened_doc)
-flattened_doc = add_output_function_to_simulation("pSyk_norm", "(pSYK / 3.27)", flattened_doc)
+flattened_doc = add_output_function_to_simulation("pLyn_norm", "(pLYN / (3.27 * 9.2961E-4))", flattened_doc)
+flattened_doc = add_output_function_to_simulation("pSyk_norm", "(pSYK / 1.18)", flattened_doc)
 
 xml_doc=flattened_doc
 xml_doc.getElementsByTagName("SimpleReaction")
@@ -140,6 +140,10 @@ for x in t:
     if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
         convert_mass_action_to_michaelis_menten(x)
     if "BLNK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x)
+    if "CD19_phos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x)
+    if "CD19_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
         convert_mass_action_to_michaelis_menten(x)
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
@@ -167,7 +171,8 @@ t=flattened_doc.getElementsByTagName("SimpleReaction")
 IC_species={"BLNK" : 0.65, "pSYK" : "(fsyk * Tsyk * ((syk_e1 * exp( - (t * syk_tau1))) + (syk_e2 * exp( - (t * syk_tau2)))))",
             "pLYN" : "(flyn * Tlyn * ((lyn_e1 * exp( - (t * lyn_tau1))) + (lyn_e2 * exp( - (t * lyn_tau2)))))",
             "BCAP" : 0.9,
-            "shp1": 6.9
+            "shp1": 6.9,
+            "CD19": 0.83
             }
 for key, val in IC_species.items():
     get_node_by_attribute(flattened_doc.getElementsByTagName("ReactionContext")[0], "LocalizedCompoundRef",
