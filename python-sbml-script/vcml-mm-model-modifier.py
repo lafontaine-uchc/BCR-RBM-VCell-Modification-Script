@@ -133,7 +133,7 @@ flattened_doc = add_output_function_to_simulation("pSyk_norm", "(pSYK / 1.18)", 
 xml_doc=flattened_doc
 xml_doc.getElementsByTagName("SimpleReaction")
 
-t=flattened_doc.getElementsByTagName("SimpleReaction")
+t = flattened_doc.getElementsByTagName("SimpleReaction")
 
 
 for x in t:
@@ -172,7 +172,8 @@ IC_species={"BLNK" : 0.65, "pSYK" : "(fsyk * Tsyk * ((syk_e1 * exp( - (t * syk_t
             "pLYN" : "(flyn * Tlyn * ((lyn_e1 * exp( - (t * lyn_tau1))) + (lyn_e2 * exp( - (t * lyn_tau2)))))",
             "BCAP" : 0.9,
             "shp1": 6.9,
-            "CD19": 0.83
+            "CD19": 0.83,
+            "T_d": 1
             }
 for key, val in IC_species.items():
     get_node_by_attribute(flattened_doc.getElementsByTagName("ReactionContext")[0], "LocalizedCompoundRef",
