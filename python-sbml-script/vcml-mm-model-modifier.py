@@ -112,8 +112,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
 
 
 
-flattened_doc = minidom.parse('small_model_6-5-18_flattned.vcml')
-original_doc = minidom.parse('small_model_6-5-18_rbm.vcml')
+flattened_doc = minidom.parse('small_model_6-6-18_flattned.vcml')
+original_doc = minidom.parse('small_model_6-6-18_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
@@ -145,6 +145,10 @@ for x in t:
         convert_mass_action_to_michaelis_menten(x)
     if "CD19_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
         convert_mass_action_to_michaelis_menten(x)
+    if "SHIP_phos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x)
+    if "SHIP_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x)
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
 #adds initial conditions
@@ -173,7 +177,9 @@ IC_species={"BLNK" : 0.65, "pSYK" : "(fsyk * Tsyk * ((syk_e1 * exp( - (t * syk_t
             "BCAP" : 0.9,
             "shp1": 6.9,
             "CD19": 0.83,
-            "T_d": 1
+            "T_d": 1,
+            "SHIP": 2.82,
+            "ptp1b":  1.48
             }
 for key, val in IC_species.items():
     get_node_by_attribute(flattened_doc.getElementsByTagName("ReactionContext")[0], "LocalizedCompoundRef",
