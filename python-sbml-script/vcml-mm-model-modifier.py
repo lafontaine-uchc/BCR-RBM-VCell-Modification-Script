@@ -63,7 +63,7 @@ def add_output_function_to_simulation(function_name, function_content, vcml_doc)
     OutputFunctions = vcml_doc.getElementsByTagName('OutputFunctions')
     OutputFunctions[0].appendChild(new_element)
     return(vcml_doc)
-def convert_mass_action_to_michaelis_menten(simple_reaction_node):
+def convert_mass_action_to_michaelis_menten(simple_reaction_node, substrate_name, catalyst_name):
 
     print(simple_reaction_node.attributes.getNamedItem("Name").firstChild.data)
     kinetics = simple_reaction_node.getElementsByTagName("Kinetics")[0]
@@ -91,8 +91,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
 
     product_names.remove(catalyst)
     product_name = product_names[0]
-    print("substrate: ", substrate, "product_name: ", product_name, "catalyst: ", catalyst)
-    new_rxn = "((" + k + " * " + catalyst + " * " + substrate + ") / (" + K + " + " + substrate + "))"
+    print("substrate: ", substrate, "substrate_name: ", substrate_name, "product: ", product_name, "catalyst: ", catalyst, "catalyst_name: ", catalyst_name)
+    new_rxn = "((" + k + " * " + catalyst_name + " * " + substrate + ") / (" + K + " + " + substrate_name + "))"
     A.firstChild.data = new_rxn
     print(get_node_by_attribute(simple_reaction_node.getElementsByTagName("Kinetics")[0], "Role", "reaction rate").firstChild.data)
     # kinetics.attributes.getNamedItem("KineticsType").firstChild.data = 'GeneralKinetics'
@@ -112,8 +112,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node):
 
 
 
-flattened_doc = minidom.parse('small_model_6-6-18_flattned.vcml')
-original_doc = minidom.parse('small_model_6-6-18_rbm.vcml')
+flattened_doc = minidom.parse('small_model_6-7-18_flattned.vcml')
+original_doc = minidom.parse('small_model_6-7-18_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
@@ -138,17 +138,18 @@ t = flattened_doc.getElementsByTagName("SimpleReaction")
 
 for x in t:
     if "BLNK_phos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x, "O0BLNK", "pSYK")
     if "BLNK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x, "O0pBLNK", "shp1")
     if "CD19_phos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x,"CD19", "pLYN")
     if "CD19_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x, "pCD19", "T_d")
     if "SHIP_phos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x, "SHIP", "pLYN")
     if "SHIP_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x)
+        convert_mass_action_to_michaelis_menten(x, "pSHIP", "ptp1b")
+
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
 #adds initial conditions
@@ -179,7 +180,9 @@ IC_species={"BLNK" : 0.65, "pSYK" : "(fsyk * Tsyk * ((syk_e1 * exp( - (t * syk_t
             "CD19": 0.83,
             "T_d": 1,
             "SHIP": 2.82,
-            "ptp1b":  1.48
+            "ptp1b":  1.48,
+            "init_btk": 1.49,
+            "PIP3": 2
             }
 for key, val in IC_species.items():
     get_node_by_attribute(flattened_doc.getElementsByTagName("ReactionContext")[0], "LocalizedCompoundRef",
