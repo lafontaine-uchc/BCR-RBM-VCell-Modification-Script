@@ -115,8 +115,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node, substrate_name
 
 
 
-flattened_doc = minidom.parse('small_model_6-8-18_flattned.vcml')
-original_doc = minidom.parse('small_model_6-8-18_rbm.vcml')
+flattened_doc = minidom.parse('small_model_8-14-18_flattned.vcml')
+original_doc = minidom.parse('small_model_8-14-18_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
@@ -132,7 +132,8 @@ for key, value in ob.items():
 
 flattened_doc = add_output_function_to_simulation("pLyn_norm", "(pLYN / (3.27 * 9.2961E-4))", flattened_doc)
 flattened_doc = add_output_function_to_simulation("pSyk_norm", "(pSYK / 1.18)", flattened_doc)
-
+flattened_doc = add_output_function_to_simulation("bBTK", "(O0BTK_bound_blnk1+O0BTK_bound_pip31)", flattened_doc)
+flattened_doc = add_output_function_to_simulation("bBTK_as_model", "(bBTK1 / (1.0 + (51.215 * PKC)))", flattened_doc)
 xml_doc=flattened_doc
 xml_doc.getElementsByTagName("SimpleReaction")
 
