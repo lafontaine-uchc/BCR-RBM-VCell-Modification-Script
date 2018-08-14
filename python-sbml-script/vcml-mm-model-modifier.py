@@ -194,7 +194,8 @@ IC_species={"BLNK" : 0.65, "pSYK" : "(fsyk * Tsyk * ((syk_e1 * exp( - (t * syk_t
             "ptp1b":  1.48,
             "init_btk": 1.49,
             "PIP3": 2, # for testing only
-            "PKC": 0.06 #for testing only
+            "PKC": 0.06, #for testing only
+            "init_plcg": 2.57
             }
 for key, val in IC_species.items():
     get_node_by_attribute(flattened_doc.getElementsByTagName("ReactionContext")[0], "LocalizedCompoundRef",
