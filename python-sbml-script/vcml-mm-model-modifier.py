@@ -160,7 +160,7 @@ for x in t:
         #convert_mass_action_to_michaelis_menten(x, "(((O0BTK_bound_pip3 + O0BTK_bound_blnk) / (1 + K_pkbt * PKC)) - O0pBTK)", "pLYN")
         convert_mass_action_to_michaelis_menten(x, "BTK_avalailable", "pLYN")
     if "BTK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
-        convert_mass_action_to_michaelis_menten(x, "O0pBTK", "pSYK")
+        convert_mass_action_to_michaelis_menten(x, "O0pBTK", "T_d")
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
 #adds initial conditions
