@@ -115,8 +115,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node, substrate_name
 
 
 
-flattened_doc = minidom.parse('small_model_8-14-18_flattned.vcml')
-original_doc = minidom.parse('small_model_8-14-18_rbm.vcml')
+flattened_doc = minidom.parse('small_model_10-2-19_flattned.vcml')
+original_doc = minidom.parse('small_model_10-2-19_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
@@ -134,6 +134,7 @@ flattened_doc = add_output_function_to_simulation("pLyn_norm", "(pLYN / (3.27 * 
 flattened_doc = add_output_function_to_simulation("pSyk_norm", "(pSYK / 1.18)", flattened_doc)
 flattened_doc = add_output_function_to_simulation("bBTK", "(O0BTK_bound_blnk1+O0BTK_bound_pip31)", flattened_doc)
 flattened_doc = add_output_function_to_simulation("bBTK_as_model", "(bBTK1 / (1.0 + (51.215 * PKC)))", flattened_doc)
+flattened_doc = add_output_function_to_simulation("O0pBTK_total", "(pBTK_real)", flattened_doc)
 xml_doc=flattened_doc
 xml_doc.getElementsByTagName("SimpleReaction")
 
@@ -161,6 +162,11 @@ for x in t:
         convert_mass_action_to_michaelis_menten(x, "BTK_avalailable", "pLYN")
     if "BTK_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
         convert_mass_action_to_michaelis_menten(x, "O0pBTK", "T_d")
+    if "PLC_phos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x, "PLC_available", "pBTK_real")
+    if "PLC_dephos" in x.attributes.getNamedItem("Name").firstChild.data:
+        convert_mass_action_to_michaelis_menten(x, "O0pPLCg", "ptp1b")
+        #convert_mass_action_to_michaelis_menten(x, "(((O0BTK_bound_pip3 + O0BTK_bound_blnk) / (1 + K_pkbt * PKC)) - O0pBTK)", "pLYN")
 t=flattened_doc.getElementsByTagName("SimpleReaction")
 
 #adds initial conditions
