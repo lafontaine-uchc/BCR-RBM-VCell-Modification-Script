@@ -115,8 +115,8 @@ def convert_mass_action_to_michaelis_menten(simple_reaction_node, substrate_name
 
 
 
-flattened_doc = minidom.parse('small_model_10-2-19_flattned.vcml')
-original_doc = minidom.parse('small_model_10-2-19_rbm.vcml')
+flattened_doc = minidom.parse('small_model_10-23-19_flattned.vcml')
+original_doc = minidom.parse('small_model_10-23-19_rbm.vcml')
 with open("test_output_nochange.vcml", "w") as xml_file:
     flattened_doc.writexml(xml_file)
 list_reactions(flattened_doc)
